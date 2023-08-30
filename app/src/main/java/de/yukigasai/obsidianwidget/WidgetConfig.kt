@@ -3,7 +3,13 @@ package de.yukigasai.obsidianwidget
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-data class WidgetConfig(var folder: String, var fileName: String, var useRegex: Boolean, var vaultName: String) {
+data class WidgetConfig(
+    var folder: String = "",
+    var fileName: String = "",
+    var useRegex: Boolean = false,
+    var vaultName: String = "",
+    var hideDoneTasks: Boolean = false
+) {
     fun getFullPath(): String {
         if(!useRegex) {
             return "${folder}${fileName}.md"

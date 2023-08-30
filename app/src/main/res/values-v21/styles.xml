@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <style name="Widget.ObsidianWidget.AppWidget.Container" parent="android:Widget">
         <item name="android:id">@android:id/background</item>
@@ -10,5 +10,9 @@
         <item name="android:padding">?attr/appWidgetPadding</item>
         <item name="android:background">@drawable/app_widget_inner_view_background</item>
         <item name="android:textColor">?android:attr/textColorPrimary</item>
+    </style>
+
+    <style name="Glance.AppWidget.CheckBoxText" parent="android:Widget" tools:ignore="PrivateResource">
+        <item name="android:textColor">@android:color/black</item>
     </style>
 </resources>

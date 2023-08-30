@@ -7,6 +7,6 @@
 
     <style name="Widget.ObsidianWidget.AppWidget.InnerView" parent="android:Widget">
         <item name="android:background">?android:attr/colorBackground</item>
-        <item name="android:textColor">?android:attr/textColorPrimary</item>
+        <item name="android:textColor">@android:color/black</item>
     </style>
 </resources>
