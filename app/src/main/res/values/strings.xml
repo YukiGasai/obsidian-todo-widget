@@ -2,4 +2,16 @@
     <string name="app_name">ObsidianWidget</string>
     <string name="add_widget">Add widget</string>
     <string name="app_widget_description">This is an app widget description</string>
+
+
+<!--    Configuration Text-->
+    <string name="config_header">Configure your widget</string>
+    <string name="config_vault_name_hint">Vault Name</string>
+    <string name="config_hide_done_text">Hide task that are done</string>
+    <string name="config_folder_path_hint">Folder Path</string>
+    <string name="config_file_name_hint">File Name</string>
+    <string name="config_select_button">Select</string>
+    <string name="config_create_button">Create</string>
+
+
 </resources>

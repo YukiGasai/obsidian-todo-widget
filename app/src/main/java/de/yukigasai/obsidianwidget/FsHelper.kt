@@ -12,6 +12,7 @@ class FsHelper {
     }
 
     fun loadTextData(fileName: String): String {
+        println(fileName)
         try {
             val file = File(
                 Environment.getExternalStorageDirectory()

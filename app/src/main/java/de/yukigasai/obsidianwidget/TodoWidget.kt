@@ -71,7 +71,7 @@ class TodoWidget : GlanceAppWidget() {
                 ) {
                     val modifier = GlanceModifier.defaultWeight()
                     Text(
-                        text = config.getFullPath().split("/").last().dropLast(3),
+                        text = config.getArticleFileName().dropLast(3),
                         modifier = modifier.then(
                             GlanceModifier.clickable(actionRunCallback<OpenObsidianAction>())
                         ),

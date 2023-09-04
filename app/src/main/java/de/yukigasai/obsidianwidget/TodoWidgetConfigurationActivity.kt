@@ -37,35 +37,30 @@ class TodoWidgetConfigurationActivity : ComponentActivity() {
 
         val config = ListSharedPrefsUtil.loadWidgetSettings(this)
 
-        binding.switchUseRegex.isChecked = config.useRegex
-        binding.eTVaultName.setText(config.vaultName)
-        binding.etFolderPath.setText(config.folder)
-        binding.etFileName.setText(config.fileName)
-        binding.switchHideDone.isChecked = config.hideDoneTasks
-
-        binding.switchUseRegex.setOnCheckedChangeListener { button, isChecked ->
-            config.useRegex = isChecked
-        }
+        binding.etConfigVaultName.setText(config.vaultName)
+        binding.etConfigFolderPath.setText(config.folder)
+        binding.etConfigFileName.setText(config.fileName)
+        binding.switchConfigHideDone.isChecked = config.hideDoneTasks
 
         val resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
                 val data: Intent? = result.data
                 val url = "/${data?.data?.path?.split(":")?.last()?.replace("/storage/emulated/0/","")}/"
-                binding.etFolderPath.setText(url)
+                binding.etConfigFolderPath.setText(url)
             }
         }
 
-        binding.btnSelectFolder.setOnClickListener {
+        binding.btnConfigSelectFolder.setOnClickListener {
             val i = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
             val intent = Intent.createChooser(i, "Choose folder")
             resultLauncher.launch(intent)
         }
 
-        binding.btnCreateWidget.setOnClickListener {
-            config.vaultName = binding.eTVaultName.text.toString()
-            config.folder = binding.etFolderPath.text.toString()
-            config.fileName = binding.etFileName.text.toString()
-            config.hideDoneTasks = binding.switchHideDone.isChecked
+        binding.btnConfigCreate.setOnClickListener {
+            config.vaultName = binding.etConfigVaultName.text.toString()
+            config.folder = binding.etConfigFolderPath.text.toString()
+            config.fileName = binding.etConfigFileName.text.toString()
+            config.hideDoneTasks = binding.switchConfigHideDone.isChecked
             onWidgetContainerClicked(config)
         }
 
