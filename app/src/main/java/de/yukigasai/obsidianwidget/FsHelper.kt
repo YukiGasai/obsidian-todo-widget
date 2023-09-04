@@ -26,7 +26,7 @@ class FsHelper {
     }
 
     fun parseTodos(fileContent: String): List<TodoItem>{
-        return Regex("(\\s*)- \\[([ x])] (.*)\$", RegexOption.MULTILINE)
+        return Regex("^([^\\S\\r\\n]*)- \\[([ x])] (.*)\$", RegexOption.MULTILINE)
             .findAll(fileContent)
             .mapIndexed  {
                     index, todo ->  TodoItem(index, todo.groupValues[3], todo.groupValues[2] != " ", todo.groupValues[1])
@@ -45,9 +45,11 @@ class FsHelper {
         val originalFile = FsHelper().loadTextData(fileName)
         val newFileData: String
         if(item.isChecked){
-            newFileData = originalFile.replace("- [x] ${item.name}", "- [ ] ${item.name}")
+            val regex = Regex("- \\[x] ${item.name}\$", RegexOption.MULTILINE)
+            newFileData = originalFile.replace(regex, "- [ ] ${item.name}")
         }else {
-            newFileData = originalFile.replace("- [ ] ${item.name}", "- [x] ${item.name}")
+            val regex = Regex("- \\[ ] ${item.name}\$", RegexOption.MULTILINE)
+            newFileData = originalFile.replace(regex, "- [x] ${item.name}")
         }
         overwriteFile(fileName, newFileData)
     }

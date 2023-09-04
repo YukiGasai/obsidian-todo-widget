@@ -133,8 +133,6 @@ class TodoWidget : GlanceAppWidget() {
 private fun CheckBoxItem(item: TodoItem, config: WidgetConfig) {
     val prefs = currentState<Preferences>()
     val checked = prefs[booleanPreferencesKey(item.id.toString())] ?: item.isChecked
-    item.offSet = item.offSet.ifEmpty { " " }
-
     CheckBox(
         text = item.name,
         style = TextStyle(GlanceTheme.colors.onBackground),
@@ -146,7 +144,7 @@ private fun CheckBoxItem(item: TodoItem, config: WidgetConfig) {
             ),
         ),
         modifier = if (!config.hideDoneTasks) GlanceModifier.padding(
-            start = (12 * (item.offSet.length - 1)).dp,
+            start = (12 * (item.offSet.length - 1) + 8).dp,
             top = 4.dp,
             end = 4.dp,
             bottom = 4.dp,
