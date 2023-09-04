@@ -43,7 +43,6 @@ import androidx.glance.layout.width
 import androidx.glance.text.FontWeight
 import androidx.glance.text.Text
 import androidx.glance.text.TextStyle
-import androidx.glance.unit.ColorProvider
 
 class TodoWidget : GlanceAppWidget() {
 
@@ -58,13 +57,13 @@ class TodoWidget : GlanceAppWidget() {
         val context = LocalContext.current
         val config = ListSharedPrefsUtil.loadWidgetSettings(context)
         GlanceTheme {
-                Column(
-                    modifier = GlanceModifier
-                        .fillMaxSize()
-                        .appWidgetBackground()
-                        .padding(4.dp)
-                        .background(androidx.glance.R.color.glance_colorBackground)
-                ) {
+            Column(
+                modifier = GlanceModifier
+                    .fillMaxSize()
+                    .appWidgetBackground()
+                    .padding(4.dp)
+                    .background(GlanceTheme.colors.background)
+            ) {
                 Row(
                     modifier = GlanceModifier.fillMaxWidth().padding(4.dp),
                     verticalAlignment = Alignment.Vertical.CenterVertically
@@ -79,9 +78,7 @@ class TodoWidget : GlanceAppWidget() {
                         style = TextStyle(
                             fontWeight = FontWeight.Bold,
                             fontSize = 16.sp,
-                            color = ColorProvider(
-                                androidx.glance.R.color.glance_colorPrimary
-                            )
+                            color = GlanceTheme.colors.primary
                         )
                     )
                     Image(
@@ -97,7 +94,7 @@ class TodoWidget : GlanceAppWidget() {
                     Text(
                         text = "No todos",
                         style = TextStyle(
-                            color = ColorProvider(androidx.glance.R.color.glance_colorSecondary)
+                            color = GlanceTheme.colors.onBackground
                         )
                     )
                 } else {
@@ -118,7 +115,6 @@ class TodoWidget : GlanceAppWidget() {
 private fun CheckBoxItem(item: TodoItem, config: WidgetConfig) {
     val prefs = currentState<Preferences>()
     val checked = prefs[booleanPreferencesKey(item.id.toString())] ?: item.isChecked
-    println(item.offSet.length)
 
     CheckBox(
         text = item.name,
