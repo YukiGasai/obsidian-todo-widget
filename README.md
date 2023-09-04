@@ -1,22 +1,36 @@
 # Obsidian Todo Widget
-Android Widget to display todo list from markdown file
+Android Widget to display an interactive todo list from a markdown file
+
+## Install
+1. Download the .apk file from the [latest release](https://github.com/YukiGasai/obsidian-todo-widget/releases/latest)
+1. Install with package manager
+1. Run the main app once
+1. Allow the storage permission to read and write external files  
 
 ## Setup
 1. Select widget from the widget list
-2. Drag to Homescreen
-3. Configure the file to use
-  1. Enter the Obsidian Vault name to use
-  2. Press "Select" to define the folder where the file(s) is/are stored.
-  3. Enter the single filename or enter a date pattern
-4. Press Create
+1. Drag to Homescreen
+1. Enter the Obsidian Vault name to use
+1. Configure the file to use
+  1. Press "Select" to define the folder where the file(s) is/are stored.
+  1. Enter the single filename or enter a date pattern
+1. Press Create
 
 Note:
-- Make sure the path starts and ends with `/`
-- Make sure the file name has no extension
-- Make sure the format pattern exists. Here are some [options](https://www.datetimeformatter.com/how-to-format-date-time-in-java-8/)
+- The widget only work for Android Oreo(SDK 26) and up.
+- Make sure the date format inside the curly brackets exists. Here are some [options](https://www.datetimeformatter.com/how-to-format-date-time-in-java-8/)
 
 ## Example
 ![preview](https://github.com/YukiGasai/obsidian-todo-widget/assets/38146192/49e5f95d-7ffa-4883-a13c-1f878a9908fe)
+
+## Filename examples
+### Static file
+- `Quicknote`
+- `Todos`
+
+### Daily note
+- `{{yyyy-MM-dd}}`
+- `Daily-{{dd}}-{{MM}}-{{yyyy}}`
 
 ## Disclaimer
 Due to limited android / kotlin experience, this project is certainly messy.
