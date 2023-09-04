@@ -1,8 +1,7 @@
 <resources>
-    <string name="app_name">ObsidianWidget</string>
-    <string name="add_widget">Add widget</string>
-    <string name="app_widget_description">This is an app widget description</string>
-
+    <string name="app_name">ObsidianTodoWidget</string>
+    <string name="add_widget">Add Todo List</string>
+    <string name="app_widget_description">Show todos from an obsidian note</string>
 
 <!--    Configuration Text-->
     <string name="config_header">Configure your widget</string>
@@ -12,6 +11,4 @@
     <string name="config_file_name_hint">File Name</string>
     <string name="config_select_button">Select</string>
     <string name="config_create_button">Create</string>
-
-
 </resources>

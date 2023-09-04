@@ -1,4 +1,4 @@
-package de.yukigasai.obsidianwidget
+package de.yukigasai.obsidiantodowidget
 
 import android.os.Environment
 import java.io.File

@@ -13,6 +13,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "ObsidianWidget"
+rootProject.name = "ObsidianTodoWidget"
 include(":app")
  

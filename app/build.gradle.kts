@@ -4,15 +4,15 @@ plugins {
 }
 
 android {
-    namespace = "de.yukigasai.obsidianwidget"
+    namespace = "de.yukigasai.obsidiantodowidget"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "de.yukigasai.obsidianwidget"
+        applicationId = "de.yukigasai.obsidiantodowidget"
         minSdk = 26
         targetSdk = 33
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 2
+        versionName = "0.0.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {

@@ -1,4 +1,4 @@
-package de.yukigasai.obsidianwidget
+package de.yukigasai.obsidiantodowidget
 
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -14,15 +14,17 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import de.yukigasai.obsidianwidget.ui.theme.ObsidianWidgetTheme
+import de.yukigasai.obsidiantodowidget.ui.theme.ObsidianTodoWidgetTheme
 
 
 class MainActivity : ComponentActivity() {
@@ -69,7 +71,7 @@ class MainActivity : ComponentActivity() {
         }
 
         setContent {
-            ObsidianWidgetTheme {
+            ObsidianTodoWidgetTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
@@ -86,6 +88,11 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun Greeting() {
     Text(
+        modifier = Modifier.padding(8.dp),
+        text = "",
+    )
+    Text(
+        modifier = Modifier.padding(8.dp),
         text = "This is a widget app. This application only exists to allow the widget the Write External Storage Permission. Please grant the permission for the widget to work.",
     )
 }
@@ -170,7 +177,7 @@ fun ColorBox() {
 @Preview(name = "DayView")
 @Composable
 fun ColorBoxLight() {
-    ObsidianWidgetTheme(darkTheme = false) {
+    ObsidianTodoWidgetTheme(darkTheme = false) {
         ColorBox()
     }
 }
@@ -178,7 +185,7 @@ fun ColorBoxLight() {
 @Preview(name = "NightView", uiMode = UI_MODE_NIGHT_YES)
 @Composable
 fun ColorBoxDark() {
-    ObsidianWidgetTheme(darkTheme = true) {
+    ObsidianTodoWidgetTheme(darkTheme = true) {
         ColorBox()
     }
 }

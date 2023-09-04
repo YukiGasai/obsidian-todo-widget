@@ -1,4 +1,4 @@
-package de.yukigasai.obsidianwidget
+package de.yukigasai.obsidiantodowidget
 
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter

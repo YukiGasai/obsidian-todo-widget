@@ -1,4 +1,4 @@
-package de.yukigasai.obsidianwidget.ui.theme
+package de.yukigasai.obsidiantodowidget.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

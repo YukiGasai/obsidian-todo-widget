@@ -1,4 +1,4 @@
-package de.yukigasai.obsidianwidget
+package de.yukigasai.obsidiantodowidget
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -19,6 +19,6 @@ class ExampleInstrumentedTest {
     fun useAppContext() {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        assertEquals("de.yukigasai.obsidianwidget", appContext.packageName)
+        assertEquals("de.yukigasai.obsidiantodowidget", appContext.packageName)
     }
 }

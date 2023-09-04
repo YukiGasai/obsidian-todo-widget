@@ -1,4 +1,4 @@
-package de.yukigasai.obsidianwidget
+package de.yukigasai.obsidiantodowidget
 
 import android.app.Activity
 import android.appwidget.AppWidgetManager
@@ -6,7 +6,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.result.contract.ActivityResultContracts
-import de.yukigasai.obsidianwidget.databinding.ActivityWidgetConfigureBinding
+import de.yukigasai.obsidiantodowidget.databinding.ActivityWidgetConfigureBinding
 
 class TodoWidgetConfigurationActivity : ComponentActivity() {
     private var appWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID
@@ -75,7 +75,7 @@ class TodoWidgetConfigurationActivity : ComponentActivity() {
         val resultData = Intent().putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
         setResult(RESULT_OK, resultData)
 
-        val i = Intent("de.yukigasai.obsidianwidget.UPDATE_CONFIG_ACTION")
+        val i = Intent("de.yukigasai.obsidiantodowidget.UPDATE_CONFIG_ACTION")
             .putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
         sendBroadcast(i)
         finish()

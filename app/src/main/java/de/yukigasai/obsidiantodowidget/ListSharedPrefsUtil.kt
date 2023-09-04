@@ -1,4 +1,4 @@
-package de.yukigasai.obsidianwidget
+package de.yukigasai.obsidiantodowidget
 
 import android.content.Context
 import androidx.core.content.edit
@@ -6,7 +6,7 @@ import com.google.gson.Gson
 
 
 object ListSharedPrefsUtil {
-    private const val PREFS_NAME = "de.yukigasai.obsidianwidget.TodoWidget"
+    private const val PREFS_NAME = "de.yukigasai.obsidiantodowidget.TodoWidget"
     private const val PREF_PREFIX_KEY = "todoWidget"
 
     internal fun saveWidgetSettings(

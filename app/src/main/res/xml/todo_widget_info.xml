@@ -7,5 +7,5 @@
     android:previewImage="@drawable/preview"
     android:resizeMode="horizontal|vertical"
     android:updatePeriodMillis="5000"
-    android:configure="de.yukigasai.obsidianwidget.TodoWidgetConfigurationActivity"
+    android:configure="de.yukigasai.obsidiantodowidget.TodoWidgetConfigurationActivity"
     android:widgetCategory="home_screen" />

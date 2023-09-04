@@ -10,5 +10,5 @@
     android:targetCellWidth="2"
     android:targetCellHeight="2"
     android:updatePeriodMillis="5000"
-    android:configure="de.yukigasai.obsidianwidget.TodoWidgetConfigurationActivity"
+    android:configure="de.yukigasai.obsidiantodowidget.TodoWidgetConfigurationActivity"
     android:widgetCategory="home_screen" />
