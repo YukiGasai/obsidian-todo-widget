@@ -32,7 +32,7 @@ Note:
 - `{{yyyy-MM-dd}}`
 - `Daily-{{dd}}-{{MM}}-{{yyyy}}`
 
-## Demonstation Video
+## Demonstration
 https://github.com/YukiGasai/obsidian-todo-widget/assets/38146192/cfc415c2-cdaa-43b9-a005-42ed3df12608
 
 ## Disclaimer
