@@ -11,8 +11,8 @@ android {
         applicationId = "de.yukigasai.obsidiantodowidget"
         minSdk = 26
         targetSdk = 33
-        versionCode = 2
-        versionName = "0.0.2"
+        versionCode = 3
+        versionName = "0.0.3"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {

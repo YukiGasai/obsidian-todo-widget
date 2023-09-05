@@ -14,6 +14,8 @@ Android Widget to display an interactive todo list from a markdown file
 1. Configure the file to use
   1. Press "Select" to define the folder where the file(s) is/are stored.
   1. Enter the single filename or enter a date pattern
+1. If you want to limit the the tasks to a specific header enter the header name into the "Header" field
+  1. If you want to include sub Headers check the "Include Sub Headers" switch
 1. Press Create
 
 Note:
