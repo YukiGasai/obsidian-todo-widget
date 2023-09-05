@@ -9,6 +9,6 @@ object TodoRepo {
     fun updateTodos(config: WidgetConfig) {
         if(!config.isConfigured())return
 
-        _currentTodos.value = FsHelper().getTodosFromFile(config.getFullPath())
+        _currentTodos.value = FsHelper().getTodosFromFile(config)
     }
 }

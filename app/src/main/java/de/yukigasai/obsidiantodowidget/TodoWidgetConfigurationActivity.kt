@@ -4,6 +4,10 @@ import android.app.Activity
 import android.appwidget.AppWidgetManager
 import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
+import android.view.inputmethod.EditorInfo
+import android.widget.TextView
 import androidx.activity.ComponentActivity
 import androidx.activity.result.contract.ActivityResultContracts
 import de.yukigasai.obsidiantodowidget.databinding.ActivityWidgetConfigureBinding
@@ -41,6 +45,13 @@ class TodoWidgetConfigurationActivity : ComponentActivity() {
         binding.etConfigFolderPath.setText(config.folder)
         binding.etConfigFileName.setText(config.fileName)
         binding.switchConfigHideDone.isChecked = config.hideDoneTasks
+        binding.etConfigHeader.setText(config.header)
+        binding.switchConfigIncludeSubHeader.isClickable = binding.etConfigHeader.text.isNotBlank()
+        binding.switchConfigIncludeSubHeader.isActivated = binding.etConfigHeader.text.isNotBlank()
+        binding.switchConfigIncludeSubHeader.isEnabled = binding.etConfigHeader.text.isNotBlank()
+        binding.switchConfigIncludeSubHeader.isChecked = config.includeSubHeader
+
+
 
         val resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
@@ -56,11 +67,27 @@ class TodoWidgetConfigurationActivity : ComponentActivity() {
             resultLauncher.launch(intent)
         }
 
+        binding.etConfigHeader.addTextChangedListener (object : TextWatcher {
+            override fun afterTextChanged(s: Editable) {
+                binding.switchConfigIncludeSubHeader.isClickable = s.isNotBlank()
+                binding.switchConfigIncludeSubHeader.isActivated = s.isNotBlank()
+                binding.switchConfigIncludeSubHeader.isEnabled = s.isNotBlank()
+            }
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+            }
+        })
+
         binding.btnConfigCreate.setOnClickListener {
             config.vaultName = binding.etConfigVaultName.text.toString()
             config.folder = binding.etConfigFolderPath.text.toString()
             config.fileName = binding.etConfigFileName.text.toString()
             config.hideDoneTasks = binding.switchConfigHideDone.isChecked
+            config.header = binding.etConfigHeader.text.toString()
+            config.includeSubHeader = binding.switchConfigIncludeSubHeader.isChecked
             onWidgetContainerClicked(config)
         }
 

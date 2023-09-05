@@ -186,7 +186,7 @@ class CheckboxClickAction : ActionCallback {
         }
 
         val toggledItem = TodoRepo.currentTodos.value[toggledItemKey.toInt()]
-        FsHelper().updateTaskInFile(config.getFullPath(), toggledItem)
+        FsHelper().updateTaskInFile(config, toggledItem)
 
         refreshTodos(context, glanceId)
     }

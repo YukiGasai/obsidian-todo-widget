@@ -9,6 +9,8 @@
     <string name="config_hide_done_text">Hide task that are done</string>
     <string name="config_folder_path_hint">Folder Path</string>
     <string name="config_file_name_hint">File Name</string>
+    <string name="config_header_hint">Limit to Header</string>
+    <string name="config_sub_header_text">Include Sub Header</string>
     <string name="config_select_button">Select</string>
     <string name="config_create_button">Create</string>
 </resources>

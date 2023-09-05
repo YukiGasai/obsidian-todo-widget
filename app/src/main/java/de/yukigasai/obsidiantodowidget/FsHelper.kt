@@ -1,21 +1,23 @@
 package de.yukigasai.obsidiantodowidget
 
 import android.os.Environment
+import androidx.glance.LocalContext
 import java.io.File
 import java.nio.charset.Charset
+import kotlin.text.Regex.Companion.escape
 
 
 class FsHelper {
-    fun getTodosFromFile(fileName: String): List<TodoItem>{
-        val fileContent = loadTextData(fileName)
-        return parseTodos(fileContent)
+    fun getTodosFromFile(config: WidgetConfig): List<TodoItem>{
+        val fileContent = loadTextData(config)
+        return parseTodos(config, fileContent)
     }
 
-    fun loadTextData(fileName: String): String {
+    private fun loadTextData(config: WidgetConfig): String {
         try {
             val file = File(
                 Environment.getExternalStorageDirectory()
-                    .absolutePath, fileName
+                    .absolutePath, config.getFullPath()
             )
             if (!file.exists()) return ""
             return file.readText(Charset.defaultCharset())
@@ -25,15 +27,38 @@ class FsHelper {
         }
     }
 
-    fun parseTodos(fileContent: String): List<TodoItem>{
+    private fun filterFileContentForHeader(config: WidgetConfig, fileContent: String): String {
+        println(config.header)
+        if (config.header.isEmpty()) return fileContent
+
+            val findHeader = Regex("^(#+)\\s${escape(config.header)}\$", RegexOption.MULTILINE)
+            val match1 = findHeader.find(fileContent) ?: return ""
+            val headerLevel = match1.groupValues[1].length
+            var updatedFileContent = fileContent.drop(match1.range.last)
+
+            val findNextHeader = if (config.includeSubHeader) {
+                Regex("^#{1,${headerLevel}}\\s.*\$",
+                    setOf(RegexOption.MULTILINE, RegexOption.DOT_MATCHES_ALL))
+            } else {
+                Regex("^#+\\s.*\$",
+                    setOf(RegexOption.MULTILINE, RegexOption.DOT_MATCHES_ALL))
+            }
+
+        val match2 = findNextHeader.find(updatedFileContent) ?: return updatedFileContent
+        updatedFileContent = updatedFileContent.substring(0, match2.range.first)
+        return updatedFileContent
+    }
+
+    private fun parseTodos(config: WidgetConfig, fileContent: String): List<TodoItem>{
+        val filteredFileContent = filterFileContentForHeader(config, fileContent)
         return Regex("^([^\\S\\r\\n]*)- \\[([ x])] (.*)\$", RegexOption.MULTILINE)
-            .findAll(fileContent)
+            .findAll(filteredFileContent)
             .mapIndexed  {
                     index, todo ->  TodoItem(index, todo.groupValues[3], todo.groupValues[2] != " ", todo.groupValues[1])
             }.toList()
     }
 
-    fun overwriteFile(fileName: String, content: String) {
+    private fun overwriteFile(fileName: String, content: String) {
         val file = File(
             Environment.getExternalStorageDirectory()
                 .absolutePath, fileName
@@ -41,8 +66,8 @@ class FsHelper {
         file.writeText(content, Charset.defaultCharset())
     }
 
-    fun updateTaskInFile(fileName: String, item: TodoItem) {
-        val originalFile = FsHelper().loadTextData(fileName)
+    fun updateTaskInFile(config: WidgetConfig, item: TodoItem) {
+        val originalFile = FsHelper().loadTextData(config)
         val newFileData: String
         if(item.isChecked){
             val regex = Regex("- \\[x] ${item.name}\$", RegexOption.MULTILINE)
@@ -51,7 +76,7 @@ class FsHelper {
             val regex = Regex("- \\[ ] ${item.name}\$", RegexOption.MULTILINE)
             newFileData = originalFile.replace(regex, "- [x] ${item.name}")
         }
-        overwriteFile(fileName, newFileData)
+        overwriteFile(config.getFullPath(), newFileData)
     }
 
 }

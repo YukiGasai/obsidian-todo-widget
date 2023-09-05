@@ -8,7 +8,9 @@ data class WidgetConfig(
     var folder: String = "",
     var fileName: String = "",
     var vaultName: String = "",
-    var hideDoneTasks: Boolean = false
+    var hideDoneTasks: Boolean = false,
+    var header: String = "",
+    var includeSubHeader: Boolean = false
 ) {
     private fun replacePattern(today: LocalDateTime, pattern: String): String{
         val trueDatePattern = pattern.drop(2).dropLast(2)
