@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">ObsidianTodoWidget</string>
-    <string name="add_widget">Add Todo List</string>
     <string name="app_widget_description">Show todos from an obsidian note</string>
 
 <!--    Configuration Text-->
@@ -12,5 +11,5 @@
     <string name="config_header_hint">Limit to Header</string>
     <string name="config_sub_header_text">Include Sub Header</string>
     <string name="config_select_button">Select</string>
-    <string name="config_create_button">Create</string>
+    <string name="config_create_button">Add Todo List</string>
 </resources>

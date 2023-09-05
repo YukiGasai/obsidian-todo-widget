@@ -1,7 +1,6 @@
 package de.yukigasai.obsidiantodowidget
 
 import android.os.Environment
-import androidx.glance.LocalContext
 import java.io.File
 import java.nio.charset.Charset
 import kotlin.text.Regex.Companion.escape
@@ -28,21 +27,20 @@ class FsHelper {
     }
 
     private fun filterFileContentForHeader(config: WidgetConfig, fileContent: String): String {
-        println(config.header)
         if (config.header.isEmpty()) return fileContent
 
-            val findHeader = Regex("^(#+)\\s${escape(config.header)}\$", RegexOption.MULTILINE)
-            val match1 = findHeader.find(fileContent) ?: return ""
-            val headerLevel = match1.groupValues[1].length
-            var updatedFileContent = fileContent.drop(match1.range.last)
+        val findHeader = Regex("^(#+)\\s${escape(config.header)}\$", RegexOption.MULTILINE)
+        val match1 = findHeader.find(fileContent) ?: return ""
+        val headerLevel = match1.groupValues[1].length
+        var updatedFileContent = fileContent.drop(match1.range.last)
 
-            val findNextHeader = if (config.includeSubHeader) {
-                Regex("^#{1,${headerLevel}}\\s.*\$",
-                    setOf(RegexOption.MULTILINE, RegexOption.DOT_MATCHES_ALL))
-            } else {
-                Regex("^#+\\s.*\$",
-                    setOf(RegexOption.MULTILINE, RegexOption.DOT_MATCHES_ALL))
-            }
+        val findNextHeader = if (config.includeSubHeader) {
+            Regex("^#{1,${headerLevel}}\\s.*\$",
+                setOf(RegexOption.MULTILINE, RegexOption.DOT_MATCHES_ALL))
+        } else {
+            Regex("^#+\\s.*\$",
+                setOf(RegexOption.MULTILINE, RegexOption.DOT_MATCHES_ALL))
+        }
 
         val match2 = findNextHeader.find(updatedFileContent) ?: return updatedFileContent
         updatedFileContent = updatedFileContent.substring(0, match2.range.first)
