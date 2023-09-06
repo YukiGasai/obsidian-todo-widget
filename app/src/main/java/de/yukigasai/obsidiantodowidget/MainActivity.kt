@@ -49,6 +49,13 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    private fun checkForNotificationPermission(): Boolean{
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+             return (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED)
+        }
+        return true
+    }
+
     fun checkStoragePermissions(): Boolean {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             //Android is 11 (R) or above
@@ -68,6 +75,12 @@ class MainActivity : ComponentActivity() {
 
         if(!checkStoragePermissions()){
             requestForStoragePermissions()
+        }
+
+        if(!checkForNotificationPermission()) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                requestPermissions(arrayOf(android.Manifest.permission.POST_NOTIFICATIONS), 1)
+            }
         }
 
         setContent {
