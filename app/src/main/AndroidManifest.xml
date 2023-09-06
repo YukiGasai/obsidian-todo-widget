@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
@@ -15,13 +17,13 @@
         android:supportsRtl="true"
         android:requestLegacyExternalStorage="true"
         android:theme="@style/Theme.ObsidianTodoWidget">
+
         <activity
             android:theme="@style/Theme.ObsidianTodoWidget"
             android:name=".TodoWidgetConfigurationActivity"
             android:exported="false">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
-                <action android:name="de.yukigasai.obsidiantodowidget.UPDATE_CONFIG_ACTION" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
@@ -31,13 +33,18 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-                <action android:name="de.yukigasai.obsidiantodowidget.UPDATE_CONFIG_ACTION" />
+                <action android:name="de.yukigasai.obsidiantodowidget.ACTION_UPDATE_CONFIG" />
+                <action android:name="de.yukigasai.obsidiantodowidget.ACTION_END_NOTIFICATION_CHECK" />
             </intent-filter>
             <meta-data
                 android:name="android.appwidget.provider"
                 android:resource="@xml/todo_widget_info" />
         </receiver>
-
+        <receiver android:name=".MyReceiver" android:exported="true">
+            <intent-filter>
+                <action android:name="de.yukigasai.obsidiantodowidget.ACTION_START_NOTIFICATION"/>
+            </intent-filter>
+        </receiver>
         <activity
             android:name=".MainActivity"
             android:exported="true"

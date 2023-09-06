@@ -12,4 +12,10 @@
     <string name="config_sub_header_text">Include Sub Header</string>
     <string name="config_select_button">Select</string>
     <string name="config_create_button">Add Todo List</string>
+
+<!--    Notification Text-->
+    <string name="channel_name">Obsidian Todo Widget Channel</string>
+    <string name="channel_description">Get reminders for Obsidian tasks</string>
+
+
 </resources>

@@ -1,15 +1,21 @@
 package de.yukigasai.obsidiantodowidget
 
+import android.annotation.SuppressLint
+import android.app.AlarmManager
+import android.app.PendingIntent
+import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.content.Intent
 import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
 import android.net.Uri
 import android.os.Build
+import android.widget.Toast
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.app.NotificationManagerCompat
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.glance.BackgroundModifier
@@ -25,6 +31,7 @@ import androidx.glance.action.clickable
 import androidx.glance.appwidget.CheckBox
 import androidx.glance.appwidget.CheckboxDefaults
 import androidx.glance.appwidget.GlanceAppWidget
+import androidx.glance.appwidget.GlanceAppWidgetManager
 import androidx.glance.appwidget.GlanceAppWidgetReceiver
 import androidx.glance.appwidget.action.ActionCallback
 import androidx.glance.appwidget.action.ToggleableStateKey
@@ -48,6 +55,11 @@ import androidx.glance.layout.width
 import androidx.glance.text.FontWeight
 import androidx.glance.text.Text
 import androidx.glance.text.TextStyle
+import com.google.gson.Gson
+import kotlinx.coroutines.runBlocking
+import java.time.Duration
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 class TodoWidget : GlanceAppWidget() {
 
@@ -152,7 +164,7 @@ private fun CheckBoxItem(item: TodoItem, config: WidgetConfig) {
     )
 }
 
-private val toggledItemKey = ActionParameters.Key<String>("ToggledItemKey")
+private val toggledItemKey = ActionParameters.Key<String>(Constants.Keys.TOGGLE_ITEM_KEY)
 
 class OpenObsidianAction : ActionCallback {
     override suspend fun onAction(
@@ -201,11 +213,63 @@ class RefreshButtonHandler : ActionCallback {
         refreshTodos(context, glanceId)
     }
 }
+@SuppressLint("ScheduleExactAlarm")
+fun checkForReminders(todo: TodoItem, context: Context) {
+    // Get The dateTime from the name
+    val getDateRegex = Regex("[@\uD83D\uDCC5]\\{?(\\d{4}-\\d{2}-\\d{2}( \\d{2}:\\d{2})?)\\}?")
+    // Find date match or return
+    val match: MatchResult = getDateRegex.find(todo.name) ?: return
+    var dateString = match.groups[1]?.value
+
+    // Add time if none is set
+    if (match.groupValues[0].length < 16) {
+        dateString = "$dateString 12:00"
+    }
+
+    val todoTileWithoutDate = todo.name.replace(match.groupValues[0], "")
+
+    // Calculate the milliseconds  until reminder should fire
+    val reminderDateTime = LocalDateTime.parse(dateString, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"))
+    val nowDateTime = LocalDateTime.now()
+    val duration = Duration.between(nowDateTime, reminderDateTime)
+
+    // Event already happened
+    if(duration.isNegative || duration.isZero) return
+
+    val durationMillis = duration.toMillis()
+
+    val reminderMillis = System.currentTimeMillis() + durationMillis
+
+    // Hash the text of task to get a semi unique id
+    // TODO: Find something more reliable
+    val todoId = todo.name.hashCode()
+    val intent = Intent(context, MyReceiver::class.java)
+    val gson = Gson()
+    // Set the action and the data for the intent
+    intent.action = Constants.Actions.START_NOTIFICATION
+    intent.putExtra(Constants.Extras.NOTIFICATION_TITLE, todoTileWithoutDate)
+    intent.putExtra(Constants.Extras.NOTIFICATION_MESSAGE, match.groupValues[0])
+    intent.putExtra(Constants.Extras.NOTIFICATION_TODO, gson.toJson(todo))
+
+    // Create a pending intent that will be triggered when the alarm goes off
+    val pendingIntent = PendingIntent.getBroadcast(context, todoId, intent, PendingIntent.FLAG_MUTABLE)
+    // Get the alarm manager from the system
+    val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+
+    // Caner possibly running alarm for checked task
+    if(todo.isChecked) {
+        alarmManager.cancel(pendingIntent)
+    } else {
+        // Set alarm for task: will not set a new one if one with same todoId is already set
+        alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, reminderMillis, pendingIntent)
+        println("Set alarm for ${todo.name} in ${duration.seconds} seconds")
+    }
+}
 
 /**
  * Force update the todo info after user click
  */
-
+@SuppressLint("ScheduleExactAlarm")
 suspend fun refreshTodos(context: Context, glanceId: GlanceId) {
     val config = ListSharedPrefsUtil.loadWidgetSettings(context)
 
@@ -213,6 +277,7 @@ suspend fun refreshTodos(context: Context, glanceId: GlanceId) {
     updateAppWidgetState(context, glanceId) { state ->
         for(todo in TodoRepo.currentTodos.value) {
             state[booleanPreferencesKey(todo.id.toString())] = todo.isChecked
+            checkForReminders(todo, context)
         }
     }
     TodoWidget().update(context, glanceId)
@@ -220,4 +285,52 @@ suspend fun refreshTodos(context: Context, glanceId: GlanceId) {
 
 class TodoWidgetReceiver : GlanceAppWidgetReceiver() {
     override val glanceAppWidget: GlanceAppWidget = TodoWidget()
+
+    override fun onReceive(context: Context, intent: Intent) {
+        super.onReceive(context, intent)
+        val gson = Gson()
+
+        if(intent.action == Constants.Actions.END_NOTIFICATION_CHECK) {
+            val config = ListSharedPrefsUtil.loadWidgetSettings(context)
+
+            val todo = gson.fromJson(
+                intent.getStringExtra(Constants.Extras.NOTIFICATION_TODO),
+                TodoItem::class.java
+            )
+            FsHelper().updateTaskInFile(config, todo)
+            val toast = Toast(context)
+            toast.setText("Marked ${todo.name} as done.")
+            toast.duration = Toast.LENGTH_SHORT
+            toast.show()
+            NotificationManagerCompat.from(context).cancel(null, todo.name.hashCode())
+        }
+
+        val manager = GlanceAppWidgetManager(context)
+        val widget = TodoWidget()
+
+        runBlocking {
+            val glanceIds = manager.getGlanceIds(widget.javaClass)
+            glanceIds.forEach { glanceId ->
+                refreshTodos(context, glanceId)
+            }
+        }
+    }
+
+    override fun onUpdate(
+        context: Context,
+        appWidgetManager: AppWidgetManager,
+        appWidgetIds: IntArray
+    ) {
+        super.onUpdate(context, appWidgetManager, appWidgetIds)
+        val manager = GlanceAppWidgetManager(context)
+        val widget = TodoWidget()
+
+        runBlocking {
+            val glanceIds = manager.getGlanceIds(widget.javaClass)
+            glanceIds.forEach { glanceId ->
+                refreshTodos(context, glanceId)
+            }
+        }
+    }
+
 }

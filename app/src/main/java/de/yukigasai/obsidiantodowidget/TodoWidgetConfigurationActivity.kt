@@ -6,8 +6,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.view.inputmethod.EditorInfo
-import android.widget.TextView
 import androidx.activity.ComponentActivity
 import androidx.activity.result.contract.ActivityResultContracts
 import de.yukigasai.obsidiantodowidget.databinding.ActivityWidgetConfigureBinding
@@ -97,14 +95,14 @@ class TodoWidgetConfigurationActivity : ComponentActivity() {
         ListSharedPrefsUtil.saveWidgetSettings(this, widgetConfig)
         // It is the responsibility of the configuration activity to update the app widget
 
-
         // Make sure we pass back the original appWidgetId.
-        val resultData = Intent().putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
+        val resultData = Intent(this, TodoWidgetReceiver::class.java)
+        resultData.action = Constants.Actions.UPDATE_CONFIG
+        resultData.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
+
         setResult(RESULT_OK, resultData)
 
-        val i = Intent("de.yukigasai.obsidiantodowidget.UPDATE_CONFIG_ACTION")
-            .putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
-        sendBroadcast(i)
+        sendBroadcast(Intent(resultData))
         finish()
     }
 }
