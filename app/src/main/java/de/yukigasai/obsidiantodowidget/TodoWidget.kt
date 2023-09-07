@@ -1,8 +1,6 @@
 package de.yukigasai.obsidiantodowidget
 
 import android.annotation.SuppressLint
-import android.app.AlarmManager
-import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.content.Intent
@@ -57,10 +55,6 @@ import androidx.glance.text.Text
 import androidx.glance.text.TextStyle
 import com.google.gson.Gson
 import kotlinx.coroutines.runBlocking
-import java.time.Duration
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
-import java.time.format.DateTimeParseException
 
 class TodoWidget : GlanceAppWidget() {
 
@@ -214,67 +208,6 @@ class RefreshButtonHandler : ActionCallback {
         refreshTodos(context, glanceId)
     }
 }
-@SuppressLint("ScheduleExactAlarm")
-fun checkForReminders(todo: TodoItem, context: Context) {
-    val nowDateTime = LocalDateTime.now()
-
-    // Get The dateTime from the name
-    val getDateRegex = Regex("[@\uD83D\uDCC5]\\{?((\\d{4}-\\d{2}-\\d{2})?(\\s?\\d{2}:\\d{2})?)\\}?")
-    // Find date match or return
-    val match: MatchResult = getDateRegex.find(todo.name) ?: return
-
-
-    var dateString = match.groups[2]?.value ?: nowDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
-
-    dateString += if(match.groups[3] == null){
-        " 12:00"
-    }else {
-        " ${match.groups[3]?.value?.trim()}"
-    }
-
-    val todoTileWithoutDate = todo.name.replace(match.groupValues[0], "")
-    // Calculate the milliseconds  until reminder should fire
-    val reminderDateTime:LocalDateTime
-    try {
-        reminderDateTime = LocalDateTime.parse(dateString, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"))
-    }catch (error: DateTimeParseException) {
-        System.err.println(error.cause)
-        return
-    }
-    val duration = Duration.between(nowDateTime, reminderDateTime)
-
-    // Event already happened
-    if(duration.isNegative || duration.isZero) return
-
-    val durationMillis = duration.toMillis()
-
-    val reminderMillis = System.currentTimeMillis() + durationMillis
-
-    // Hash the text of task to get a semi unique id
-    // TODO: Find something more reliable
-    val todoId = todo.name.hashCode()
-    val intent = Intent(context, MyReceiver::class.java)
-    val gson = Gson()
-    // Set the action and the data for the intent
-    intent.action = Constants.Actions.START_NOTIFICATION
-    intent.putExtra(Constants.Extras.NOTIFICATION_TITLE, todoTileWithoutDate)
-    intent.putExtra(Constants.Extras.NOTIFICATION_MESSAGE, match.groupValues[0])
-    intent.putExtra(Constants.Extras.NOTIFICATION_TODO, gson.toJson(todo))
-
-    // Create a pending intent that will be triggered when the alarm goes off
-    val pendingIntent = PendingIntent.getBroadcast(context, todoId, intent, PendingIntent.FLAG_MUTABLE)
-    // Get the alarm manager from the system
-    val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-
-    // Caner possibly running alarm for checked task
-    if(todo.isChecked) {
-        alarmManager.cancel(pendingIntent)
-    } else {
-        // Set alarm for task: will not set a new one if one with same todoId is already set
-        alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, reminderMillis, pendingIntent)
-        println("Set alarm for ${todo.name} in ${duration.seconds} seconds")
-    }
-}
 
 /**
  * Force update the todo info after user click
@@ -284,10 +217,12 @@ suspend fun refreshTodos(context: Context, glanceId: GlanceId) {
     val config = ListSharedPrefsUtil.loadWidgetSettings(context)
 
     TodoRepo.updateTodos(config)
+    // Clear all reminder to make sure no task that no longer exist is triggered
+    ReminderHelper.clearAllReminder(context)
     updateAppWidgetState(context, glanceId) { state ->
         for(todo in TodoRepo.currentTodos.value) {
             state[booleanPreferencesKey(todo.id.toString())] = todo.isChecked
-            checkForReminders(todo, context)
+            ReminderHelper.createReminderForTodo(context, todo)
         }
     }
     TodoWidget().update(context, glanceId)
