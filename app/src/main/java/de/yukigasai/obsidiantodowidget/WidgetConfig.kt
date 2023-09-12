@@ -14,8 +14,7 @@ data class WidgetConfig(
     var vaultName: String = "",
     var hideDoneTasks: Boolean = false,
     var header: String = "",
-    var includeSubHeader: Boolean = false,
-    var moreUpdates: Boolean = false,
+    var includeSubHeader: Boolean = false
 ) {
 
     companion object {

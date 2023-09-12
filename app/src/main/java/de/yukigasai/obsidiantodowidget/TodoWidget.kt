@@ -5,6 +5,7 @@ import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.content.Intent
 import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
+import android.content.IntentFilter
 import android.net.Uri
 import android.os.Build
 import androidx.compose.runtime.Composable
@@ -12,6 +13,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat.RECEIVER_EXPORTED
+import androidx.core.content.ContextCompat.registerReceiver
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.glance.BackgroundModifier
@@ -59,9 +62,33 @@ import de.yukigasai.obsidiantodowidget.todo.TodoRepo
 import de.yukigasai.obsidiantodowidget.util.ActionsConstants
 import de.yukigasai.obsidiantodowidget.util.Counter
 import de.yukigasai.obsidiantodowidget.util.KeysConstants
+import de.yukigasai.obsidiantodowidget.util.OnScreenReceiver
 import kotlinx.coroutines.runBlocking
 
 class TodoWidget : GlanceAppWidget() {
+
+    private var onScreenReceiver: OnScreenReceiver? = null
+
+    fun removeOnScreenReceiver(context: Context) {
+        println("removeOnScreenReceiver")
+        if (onScreenReceiver != null) {
+            context.unregisterReceiver(onScreenReceiver)
+            onScreenReceiver = null
+        }
+    }
+
+    fun registerOnScreenReceiver(context: Context) {
+        Counter(context, false).increment()
+        removeOnScreenReceiver(context)
+
+        val filter = IntentFilter()
+        filter.addAction(Intent.ACTION_USER_PRESENT)
+
+        onScreenReceiver = OnScreenReceiver()
+        println("registerOnScreenReceiver")
+        registerReceiver(context, onScreenReceiver, filter, RECEIVER_EXPORTED)
+    }
+
 
     override suspend fun provideGlance(context: Context, id: GlanceId) {
         refreshTodos(context, id)
@@ -100,7 +127,8 @@ class TodoWidget : GlanceAppWidget() {
                 ) {
                     val modifier = GlanceModifier.defaultWeight()
                     Text(
-                        text = config.getArticleFileName().dropLast(3), //"${Counter(context, true).count} ${Counter(context, false).count} ${config.getArticleFileName().dropLast(3)}",
+                        text = config.getArticleFileName().dropLast(3),
+                        // text = "${Counter(context, true).count} ${Counter(context, false).count} ${config.getArticleFileName().dropLast(3)}",
                         modifier = modifier.then(
                             GlanceModifier.clickable(actionRunCallback<OpenObsidianAction>())
                         ),
@@ -248,14 +276,10 @@ class TodoWidgetReceiver : GlanceAppWidgetReceiver() {
         }
     }
 
-    override fun onDisabled(context: Context) {
-//        cancelUpdates(context)
-    }
-
     override fun onDeleted(context: Context, appWidgetIds: IntArray) {
         super.onDeleted(context, appWidgetIds)
         println("MAIN onDeleted")
-        KeepAliveInterval.getInstance(context).clear(context)
+        TodoWidget().removeOnScreenReceiver(context)
         Counter(context, true).reset()
         Counter(context, false).reset()
     }
@@ -274,7 +298,6 @@ class TodoWidgetReceiver : GlanceAppWidgetReceiver() {
                 }
             }
             ActionsConstants.UPDATE_WIDGET -> {
-//                Counter(context, true).increment()
                 runBlocking {
                     updateAllWidgets(context)
                 }
@@ -289,15 +312,12 @@ class TodoWidgetReceiver : GlanceAppWidgetReceiver() {
         appWidgetIds: IntArray
     ) {
         super.onUpdate(context, appWidgetManager, appWidgetIds)
-        println("RUNNING REAL UPDATE")
-//        Counter(context, false).increment()
-//        KeepAliveInterval.getInstance(context).update(context)
 
+        TodoWidget().registerOnScreenReceiver(context)
 
         val manager = GlanceAppWidgetManager(context)
-        val widget = TodoWidget()
         runBlocking {
-            val glanceIds = manager.getGlanceIds(widget.javaClass)
+            val glanceIds = manager.getGlanceIds(TodoWidget().javaClass)
             glanceIds.forEach { glanceId ->
                 refreshTodos(context, glanceId)
             }

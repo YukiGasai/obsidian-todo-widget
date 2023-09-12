@@ -87,7 +87,6 @@ class TodoWidgetConfigurationActivity : ComponentActivity() {
             config.hideDoneTasks = binding.switchConfigHideDone.isChecked
             config.header = binding.etConfigHeader.text.toString()
             config.includeSubHeader = binding.switchConfigIncludeSubHeader.isChecked
-            config.moreUpdates = binding.switchConfigMoreUpdate.isChecked
             onWidgetContainerClicked(config)
         }
 
