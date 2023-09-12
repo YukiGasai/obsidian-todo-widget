@@ -1,5 +1,9 @@
 package de.yukigasai.obsidiantodowidget
 
+import android.content.Context
+import androidx.core.content.edit
+import com.google.gson.Gson
+import de.yukigasai.obsidiantodowidget.util.PreferencesConstants
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -10,8 +14,20 @@ data class WidgetConfig(
     var vaultName: String = "",
     var hideDoneTasks: Boolean = false,
     var header: String = "",
-    var includeSubHeader: Boolean = false
+    var includeSubHeader: Boolean = false,
+    var moreUpdates: Boolean = false,
 ) {
+
+    companion object {
+        fun loadFromPrefs(context: Context): WidgetConfig {
+            val gson = Gson()
+            val defaultConfig = WidgetConfig()
+            val configAsJson = context.getSharedPreferences(PreferencesConstants.WIDGET_CONFIG, 0)
+                .getString(PreferencesConstants.PREFIX, gson.toJson(defaultConfig))
+            return gson.fromJson(configAsJson, WidgetConfig::class.java)
+        }
+    }
+
     private fun replacePattern(today: LocalDateTime, pattern: String): String{
         val trueDatePattern = pattern.drop(2).dropLast(2)
         val formatter = DateTimeFormatter.ofPattern(trueDatePattern)
@@ -62,4 +78,13 @@ data class WidgetConfig(
     fun isConfigured(): Boolean {
         return folder.isNotBlank() && fileName.isNotBlank() && vaultName.isNotBlank()
     }
+
+    fun saveToPrefs(context: Context) {
+        val gson = Gson()
+        val configAsJson = gson.toJson(this)
+        context.getSharedPreferences(PreferencesConstants.WIDGET_CONFIG, 0).edit {
+            putString(PreferencesConstants.PREFIX, configAsJson)
+        }
+    }
+
 }

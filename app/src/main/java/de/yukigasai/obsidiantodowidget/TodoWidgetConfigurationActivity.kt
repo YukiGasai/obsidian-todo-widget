@@ -9,6 +9,7 @@ import android.text.TextWatcher
 import androidx.activity.ComponentActivity
 import androidx.activity.result.contract.ActivityResultContracts
 import de.yukigasai.obsidiantodowidget.databinding.ActivityWidgetConfigureBinding
+import de.yukigasai.obsidiantodowidget.util.ActionsConstants
 
 class TodoWidgetConfigurationActivity : ComponentActivity() {
     private var appWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID
@@ -37,7 +38,7 @@ class TodoWidgetConfigurationActivity : ComponentActivity() {
         val binding = ActivityWidgetConfigureBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val config = ListSharedPrefsUtil.loadWidgetSettings(this)
+        val config = WidgetConfig.loadFromPrefs(this)
 
         binding.etConfigVaultName.setText(config.vaultName)
         binding.etConfigFolderPath.setText(config.folder)
@@ -86,18 +87,19 @@ class TodoWidgetConfigurationActivity : ComponentActivity() {
             config.hideDoneTasks = binding.switchConfigHideDone.isChecked
             config.header = binding.etConfigHeader.text.toString()
             config.includeSubHeader = binding.switchConfigIncludeSubHeader.isChecked
+            config.moreUpdates = binding.switchConfigMoreUpdate.isChecked
             onWidgetContainerClicked(config)
         }
 
     }
 
     private fun onWidgetContainerClicked(widgetConfig: WidgetConfig) {
-        ListSharedPrefsUtil.saveWidgetSettings(this, widgetConfig)
+        widgetConfig.saveToPrefs(this)
         // It is the responsibility of the configuration activity to update the app widget
 
         // Make sure we pass back the original appWidgetId.
         val resultData = Intent(this, TodoWidgetReceiver::class.java)
-        resultData.action = Constants.Actions.UPDATE_CONFIG
+        resultData.action = ActionsConstants.UPDATE_WIDGET
         resultData.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
 
         setResult(RESULT_OK, resultData)

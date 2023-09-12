@@ -35,15 +35,11 @@
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
                 <action android:name="de.yukigasai.obsidiantodowidget.ACTION_UPDATE_CONFIG" />
                 <action android:name="de.yukigasai.obsidiantodowidget.ACTION_END_NOTIFICATION_CHECK" />
+                <action android:name="de.yukigasai.obsidiantodowidget.ACTION_START_NOTIFICATION" />
             </intent-filter>
             <meta-data
                 android:name="android.appwidget.provider"
                 android:resource="@xml/todo_widget_info" />
-        </receiver>
-        <receiver android:name=".MyReceiver" android:exported="true">
-            <intent-filter>
-                <action android:name="de.yukigasai.obsidiantodowidget.ACTION_START_NOTIFICATION"/>
-            </intent-filter>
         </receiver>
         <activity
             android:name=".MainActivity"

@@ -1,5 +1,6 @@
-package de.yukigasai.obsidiantodowidget
+package de.yukigasai.obsidiantodowidget.todo
 
+import de.yukigasai.obsidiantodowidget.WidgetConfig
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -9,6 +10,6 @@ object TodoRepo {
     fun updateTodos(config: WidgetConfig) {
         if(!config.isConfigured())return
 
-        _currentTodos.value = FsHelper().getTodosFromFile(config)
+        _currentTodos.value = TodoFactory(config).getTodosFromFile()
     }
 }

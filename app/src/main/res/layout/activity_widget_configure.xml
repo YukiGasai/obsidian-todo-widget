@@ -55,7 +55,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.494"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/switch_config_include_sub_header" />
+        app:layout_constraintTop_toBottomOf="@+id/switch_config_more_update" />
 
     <EditText
         android:id="@+id/et_config_file_name"
@@ -117,5 +117,17 @@
         app:layout_constraintHorizontal_bias="0.494"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/et_config_header" />
+
+    <Switch
+        android:id="@+id/switch_config_more_update"
+        android:layout_width="319dp"
+        android:layout_height="81dp"
+        android:layout_marginTop="16dp"
+        android:text="@string/config_more_update"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.494"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/switch_config_include_sub_header" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
