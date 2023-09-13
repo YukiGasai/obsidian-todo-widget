@@ -17,12 +17,13 @@ import de.yukigasai.obsidiantodowidget.R
 import de.yukigasai.obsidiantodowidget.TodoWidgetReceiver
 import de.yukigasai.obsidiantodowidget.WidgetConfig
 import de.yukigasai.obsidiantodowidget.todo.TodoItem
+import de.yukigasai.obsidiantodowidget.util.WidgetLogger
 
 
 object ReminderStartReceiver : SimpleReceiver {
     override fun onReceive(context: Context, intent: Intent) {
         if (intent.action != ActionsConstants.START_NOTIFICATION) {
-            System.err.println("OK no action fits here")
+            WidgetLogger.warn("ReminderStartReceiver wrong action received ${intent.action}")
             return
         }
 
@@ -33,7 +34,7 @@ object ReminderStartReceiver : SimpleReceiver {
         val title = intent.getStringExtra(ExtrasConstants.NOTIFICATION_TITLE)
         val desc = intent.getStringExtra(ExtrasConstants.NOTIFICATION_MESSAGE)
         val todo = gson.fromJson(intent.getStringExtra(ExtrasConstants.NOTIFICATION_TODO), TodoItem::class.java)
-        println("OKay I should send the notification for ${todo.name}")
+        WidgetLogger.info("ReminderStartReceiver send notification for ${todo.name}")
 
         // CREATE CALLBACK FOR CHECK OPTION
         val checkIntent = Intent(context, TodoWidgetReceiver::class.java)

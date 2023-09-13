@@ -10,6 +10,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.result.contract.ActivityResultContracts
 import de.yukigasai.obsidiantodowidget.databinding.ActivityWidgetConfigureBinding
 import de.yukigasai.obsidiantodowidget.util.ActionsConstants
+import de.yukigasai.obsidiantodowidget.util.WidgetLogger
 
 class TodoWidgetConfigurationActivity : ComponentActivity() {
     private var appWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID
@@ -57,6 +58,8 @@ class TodoWidgetConfigurationActivity : ComponentActivity() {
                 val data: Intent? = result.data
                 val url = "/${data?.data?.path?.split(":")?.last()?.replace("/storage/emulated/0/","")}/"
                 binding.etConfigFolderPath.setText(url)
+            } else {
+                WidgetLogger.warn("Select Folder Intent resulted in ${result.resultCode}")
             }
         }
 

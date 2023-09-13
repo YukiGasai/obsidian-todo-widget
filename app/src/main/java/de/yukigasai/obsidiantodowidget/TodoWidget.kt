@@ -278,7 +278,6 @@ class TodoWidgetReceiver : GlanceAppWidgetReceiver() {
 
     override fun onDeleted(context: Context, appWidgetIds: IntArray) {
         super.onDeleted(context, appWidgetIds)
-        println("MAIN onDeleted")
         TodoWidget().removeOnScreenReceiver(context)
         Counter(context, true).reset()
         Counter(context, false).reset()
@@ -286,8 +285,6 @@ class TodoWidgetReceiver : GlanceAppWidgetReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
         super.onReceive(context, intent)
-
-        println("MAIN onReceive:" + intent.action)
 
         when (intent.action) {
             ActionsConstants.START_NOTIFICATION -> ReminderStartReceiver.onReceive(context, intent)

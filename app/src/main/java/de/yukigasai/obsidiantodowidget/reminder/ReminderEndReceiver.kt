@@ -9,11 +9,12 @@ import de.yukigasai.obsidiantodowidget.util.ActionsConstants
 import de.yukigasai.obsidiantodowidget.util.ExtrasConstants
 import de.yukigasai.obsidiantodowidget.WidgetConfig
 import de.yukigasai.obsidiantodowidget.todo.TodoItem
+import de.yukigasai.obsidiantodowidget.util.WidgetLogger
 
 object ReminderEndReceiver : SimpleReceiver {
     override fun onReceive(context: Context, intent: Intent) {
         if (intent.action != ActionsConstants.END_NOTIFICATION_CHECK) {
-            System.err.println("OK no action fits here")
+            WidgetLogger.warn("ReminderEndReceiver wrong action received ${intent.action}")
             return
         }
 
