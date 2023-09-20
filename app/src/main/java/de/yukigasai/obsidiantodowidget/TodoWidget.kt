@@ -174,7 +174,7 @@ private fun CheckBoxItem(item: TodoItem, config: WidgetConfig) {
     val prefs = currentState<Preferences>()
     val checked = prefs[booleanPreferencesKey(item.id.toString())] ?: item.isChecked
     CheckBox(
-        text = item.name,
+        text = item.getTodoText(),
         style = TextStyle(GlanceTheme.colors.onBackground),
         checked = checked,
         colors = CheckboxDefaults.colors(),

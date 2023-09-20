@@ -30,10 +30,18 @@ data class TodoFactory(val config: WidgetConfig) {
     // Create list of todos from the content in the file
     private fun parseTodos(fileContent: String): List<TodoItem>{
         val filteredFileContent = filterFileContentForHeader(fileContent)
-        return Regex("^([^\\S\\r\\n]*)- \\[([ x])] (.*)\$", RegexOption.MULTILINE)
+        return Regex("^([^\\S\\r\\n]*)- \\[(.)] ([^#\\n]*#?(\\d)?.*)\$", RegexOption.MULTILINE)
             .findAll(filteredFileContent)
             .mapIndexed  {
-                    index, todo ->  TodoItem(index, todo.groupValues[3], todo.groupValues[2] != " ", todo.groupValues[1])
+                    index, todo ->  TodoItem(
+                        id = index,
+                        name = todo.groupValues[3],
+                        state = todo.groupValues[2],
+                        isChecked = todo.groupValues[2] == "x" || todo.groupValues[2] == "X",
+                        offSet = todo.groupValues[1],
+                        count = todo.groupValues[2].toIntOrNull() ?: 0,
+                        repeats = todo.groupValues[4].toIntOrNull(),
+                    )
             }.toList()
     }
 
