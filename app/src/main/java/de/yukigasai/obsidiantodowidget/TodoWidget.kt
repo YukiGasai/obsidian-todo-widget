@@ -53,6 +53,8 @@ import androidx.glance.layout.padding
 import androidx.glance.layout.width
 import androidx.glance.text.FontWeight
 import androidx.glance.text.Text
+import androidx.glance.text.TextAlign
+import androidx.glance.text.TextDecoration
 import androidx.glance.text.TextStyle
 import de.yukigasai.obsidiantodowidget.reminder.ReminderEndReceiver
 import de.yukigasai.obsidiantodowidget.reminder.ReminderRepo
@@ -171,25 +173,68 @@ class TodoWidget : GlanceAppWidget() {
 
 @Composable
 private fun CheckBoxItem(item: TodoItem, config: WidgetConfig) {
-    val prefs = currentState<Preferences>()
-    val checked = prefs[booleanPreferencesKey(item.id.toString())] ?: item.isChecked
-    CheckBox(
-        text = item.getTodoText(),
-        style = TextStyle(GlanceTheme.colors.onBackground),
-        checked = checked,
-        colors = CheckboxDefaults.colors(),
-        onCheckedChange = actionRunCallback<CheckboxClickAction>(
-            actionParametersOf(
-                toggledItemKey to item.id.toString()
+
+    fun GlanceModifier.leftPad(config: WidgetConfig, item: TodoItem): GlanceModifier {
+        if (!config.hideDoneTasks) {
+            return this.then(GlanceModifier.padding(
+                start = (12 * (item.offSet.length - 1) + 8).dp,
+                top = 4.dp,
+                end = 4.dp,
+                bottom = 4.dp,
+            ))
+        }
+        return this.then(GlanceModifier.padding(4.dp))
+    }
+
+    if(item.getStateEmoji() == "") {
+
+        val prefs = currentState<Preferences>()
+        val checked = prefs[booleanPreferencesKey(item.id.toString())] ?: item.isChecked
+        CheckBox(
+            text = item.getTodoText(),
+            style = TextStyle(GlanceTheme.colors.onBackground),
+            checked = checked,
+            colors = CheckboxDefaults.colors(),
+            onCheckedChange = actionRunCallback<CheckboxClickAction>(
+                actionParametersOf(
+                    toggledItemKey to item.id.toString()
+                ),
             ),
-        ),
-        modifier = if (!config.hideDoneTasks) GlanceModifier.padding(
-            start = (12 * (item.offSet.length - 1) + 8).dp,
-            top = 4.dp,
-            end = 4.dp,
-            bottom = 4.dp,
-        ) else GlanceModifier.padding(4.dp),
-    )
+            modifier = GlanceModifier.leftPad(config, item)
+        )
+    } else {
+        Row (
+            verticalAlignment = Alignment.Vertical.CenterVertically,
+        ){
+            Text(
+                text = item.getStateEmoji(),
+                style = TextStyle(
+                    fontSize = 18.sp,
+                    textAlign = TextAlign.Right,
+                    textDecoration = TextDecoration.None,
+                    color = GlanceTheme.colors.onSurface,
+                ),
+                modifier = GlanceModifier.leftPad(config, item).then(
+                GlanceModifier.clickable(actionRunCallback<CheckboxClickAction>(
+                    actionParametersOf(
+                        toggledItemKey to item.id.toString()
+                    ),
+                ))).then(GlanceModifier.width(30.dp))
+            )
+            Text(
+                text = item.name,
+                style = TextStyle(
+                    fontSize = 15.sp,
+                    color = GlanceTheme.colors.onSurface,
+                ),
+                modifier = GlanceModifier.clickable(actionRunCallback<CheckboxClickAction>(
+                    actionParametersOf(
+                        toggledItemKey to item.id.toString()
+                    ),
+                ))
+            )
+        }
+    }
 }
 
 private val toggledItemKey = ActionParameters.Key<String>(KeysConstants.TOGGLE_ITEM_KEY)
@@ -219,10 +264,12 @@ class CheckboxClickAction : ActionCallback {
 
         val config = WidgetConfig.loadFromPrefs(context)
         val toggledItemKey = requireNotNull(parameters[toggledItemKey])
-        val checked = requireNotNull(parameters[ToggleableStateKey])
+        val checked = parameters[ToggleableStateKey]
 
-        updateAppWidgetState(context, glanceId) { state ->
-            state[booleanPreferencesKey(toggledItemKey)] = checked
+        if (checked != null) {
+            updateAppWidgetState(context, glanceId) { state ->
+                state[booleanPreferencesKey(toggledItemKey)] = checked
+            }
         }
 
         val toggledItem = TodoRepo.currentTodos.value[toggledItemKey.toInt()]

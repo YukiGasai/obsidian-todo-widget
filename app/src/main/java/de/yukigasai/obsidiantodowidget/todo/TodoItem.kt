@@ -42,77 +42,80 @@ data class TodoItem(val id: Int, val name:String, val state:String, var isChecke
             return
         }
     }
-    fun getTodoText(): String {
 
+    fun getStateEmoji(): String {
         if(this.state.lowercase() == "x") {
-            return this.name
+            return ""
         }
 
         if(this.repeats != null) {
-            return "${getEmojiForNumber(this.count)} ${this.name}"
+            return getEmojiForNumber(this.count)
         }
 
         when (this.state) {
             "/" -> {
-                return "🔃 ${this.name}"
+                return "🔃"
             }
             "-" -> {
-                return "✖️ ${this.name}"
+                return "✖️"
             }
             ">" -> {
-                return "➡️ ${this.name}"
+                return "➡️"
             }
             "<" -> {
-                return "📅 ${this.name}"
+                return "📅"
             }
             "?" -> {
-                return "❓ ${this.name}"
+                return "❓"
             }
             "!" -> {
-                return "❗ ${this.name}"
+                return "❗"
             }
             "\"" -> {
-                return "💬 ${this.name}"
+                return "💬"
             }
             "l" -> {
-                return "📍 ${this.name}"
+                return "📍"
             }
             "b" -> {
-                return "🔖 ${this.name}"
+                return "🔖"
             }
             "i" -> {
-                return "ℹ️ ${this.name}"
+                return "ℹ️"
             }
-            "s" -> {
-                return "💲 ${this.name}"
+            "S" -> {
+                return "💲"
+            }
+            "*" -> {
+                return "⭐"
             }
             "I" -> {
-                return "💡 ${this.name}"
+                return "💡"
             }
             "p" -> {
-                return "👍 ${this.name}"
+                return "👍"
             }
             "c" -> {
-                return "👎 ${this.name}"
+                return "👎"
             }
             "f" -> {
-                return "🔥 ${this.name}"
+                return "🔥"
             }
             "k" -> {
-                return "🔑 ${this.name}"
+                return "🔑"
             }
             "w" -> {
-                return "🎂 ${this.name}"
+                return "🎂"
             }
             "u" -> {
-                return "📈 ${this.name}"
+                return "📈"
             }
             "d" -> {
-                return "📉 ${this.name}"
+                return "📉"
             }
         }
 
-        return this.name
+        return ""
     }
 
     private fun getEmojiForNumber(number: Int): String {
@@ -131,4 +134,7 @@ data class TodoItem(val id: Int, val name:String, val state:String, var isChecke
         return number.toString()
     }
 
+    fun getTodoText(): String {
+        return name
+    }
 }
