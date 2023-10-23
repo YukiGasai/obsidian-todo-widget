@@ -135,6 +135,10 @@ data class TodoItem(val id: Int, val name:String, val state:String, var isChecke
     }
 
     fun getTodoText(): String {
-        return name
+
+        val replaceLink = Regex("\\[([^]]+)]\\([^)]*\\)")
+
+        return name.replace(replaceLink, "$1")
+
     }
 }
